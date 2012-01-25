@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -55,7 +55,7 @@
 		A623AC9D0B8AA2FC00BA6ED4 /* MiredoConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MiredoConfig.h; sourceTree = "<group>"; };
 		A623AC9E0B8AA2FC00BA6ED4 /* MiredoConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiredoConfig.m; sourceTree = "<group>"; };
 		A623ADB30B8AE07500BA6ED4 /* miredo-pref-tool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "miredo-pref-tool.m"; sourceTree = "<group>"; };
-		A68528030B8F928B00051A92 /* miredo-pref-tool */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = "miredo-pref-tool"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A68528030B8F928B00051A92 /* miredo-pref-tool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "miredo-pref-tool"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68528800B8F95EB00051A92 /* installtool */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; path = installtool; sourceTree = "<group>"; };
 		A68528840B8F96A300051A92 /* PrivilegedOperations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrivilegedOperations.m; sourceTree = "<group>"; };
 		A68528850B8F96A300051A92 /* PrivilegedOperations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivilegedOperations.h; sourceTree = "<group>"; };
@@ -250,10 +250,19 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 1DBD214C08BA80EA00186707 /* Build configuration list for PBXProject "MiredoPreferencePane" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* MiredoPreferencePane */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				8D202CE80486D31800D8A456 /* Miredo Preference Pane */,
 				A68528020B8F928B00051A92 /* miredo-pref-tool */,
@@ -345,11 +354,12 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Miredo_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				PRODUCT_NAME = Miredo;
@@ -361,14 +371,13 @@
 		1DBD214A08BA80EA00186707 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Miredo_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/PreferencePanes";
 				PRODUCT_NAME = Miredo;
@@ -381,9 +390,9 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = "Miredo Preference Pane";
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -392,23 +401,22 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_NAME = "Miredo Preference Pane";
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};
 		A68528070B8F92BB00051A92 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "miredo-pref-tool";
 				ZERO_LINK = YES;
 			};
@@ -417,12 +425,11 @@
 		A68528080B8F92BB00051A92 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "miredo-pref-tool";
 				ZERO_LINK = NO;
 			};
