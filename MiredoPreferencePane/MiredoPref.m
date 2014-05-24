@@ -83,7 +83,7 @@ static CFStringRef miredoSCDescribe(const void* info) {
 	
 		if(!SCDynamicStoreSetNotificationKeys ( 
 			dynamic_store, 
-			(CFArrayRef)[NSMutableArray arrayWithObject:@"State:/Network/Interface/tun0/IPv6"], 
+			(CFArrayRef)[NSMutableArray arrayWithObject:@"State:/Network/Interface/utun0/IPv6"],
 			(CFArrayRef)[NSMutableArray arrayWithObject:@".*"]
 		)) {
 			NSLog(@"Unable to set notification keys!");
@@ -96,7 +96,7 @@ static CFStringRef miredoSCDescribe(const void* info) {
 }
 
 - (BOOL)isMiredoRunning {
-	return system("/sbin/ifconfig tun0")==0;
+	return system("/sbin/ifconfig utun0")==0;
 }
 
 - (BOOL)isMiredoEnabled {
@@ -173,7 +173,7 @@ ReadPropertyListFailed:
 - (NSString*)getMiredoAddress {
 	NSDictionary* plist;
 	
-	plist=(NSDictionary*)SCDynamicStoreCopyValue(dynamic_store,CFSTR("State:/Network/Interface/tun0/IPv6"));
+	plist=(NSDictionary*)SCDynamicStoreCopyValue(dynamic_store,CFSTR("State:/Network/Interface/utun0/IPv6"));
 	if(!plist) {
 		return @"::";
 	}

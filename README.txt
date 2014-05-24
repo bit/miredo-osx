@@ -58,7 +58,7 @@ make uninst-script
 	Builds the uninstall script
 
 make libjudy
-	Builds both x86 and ppc versions of libjudy
+	Builds both x86 and x86_64 versions of libjudy
 	(static-link only)
 
 make libjudy-bootstrap

@@ -1,6 +1,7 @@
 
 
-TARNAME=miredo-osx-prerelease2
+TARNAME=miredo-osx-prerelease3
+IDENTIFIER=com.openmedialibrary.pkg.miredo
 
 ##### Path Variables
 PREFIX=/usr
@@ -12,15 +13,13 @@ BUILD_DIR=$(shell pwd)/build
 UTIL_DIR=$(shell pwd)/util
 OUT_DIR=$(BUILD_DIR)/out
 TMP_DIR=/tmp
-TUNTAP_DIR=$(shell pwd)/tuntap
 
 ## miredo
 MIREDO_SRC_DIR=$(shell pwd)/miredo
 MIREDO_BUILD_X86_DIR=$(BUILD_DIR)/miredo_build_x86
-MIREDO_BUILD_PPC_DIR=$(BUILD_DIR)/miredo_build_ppc
+MIREDO_BUILD_X86_64_DIR=$(BUILD_DIR)/miredo_build_x86_64
 MIREDO_OUT_X86_DIR=$(BUILD_DIR)/miredo_out_x86
-MIREDO_OUT_PPC_DIR=$(BUILD_DIR)/miredo_out_ppc
-#MIREDO_CONFIG_FLAGS+="--enable-miredo-user=root"
+MIREDO_OUT_X86_64_DIR=$(BUILD_DIR)/miredo_out_x86_64
 MIREDO_CONFIG_FLAGS+="--enable-miredo-user=nobody"
 MIREDO_CONFIG_FLAGS+="--without-libiconv-prefix"
 MIREDO_CONFIG_FLAGS+="--without-gettext"
@@ -38,9 +37,9 @@ MIREDO_CONFIG_FLAGS+="ac_cv_header_libintl_h=no"
 ## libJudy
 JUDY_SRC_DIR=$(shell pwd)/libjudy
 JUDY_BUILD_X86_DIR=$(BUILD_DIR)/judy_build_x86
-JUDY_BUILD_PPC_DIR=$(BUILD_DIR)/judy_build_ppc
+JUDY_BUILD_X86_64_DIR=$(BUILD_DIR)/judy_build_x86_64
 JUDY_OUT_X86_DIR=$(BUILD_DIR)/judy_out_x86
-JUDY_OUT_PPC_DIR=$(BUILD_DIR)/judy_out_ppc
+JUDY_OUT_X86_64_DIR=$(BUILD_DIR)/judy_out_x86_64
 JUDY_CONFIG_FLAGS+="--disable-shared"
 JUDY_CONFIG_FLAGS+="--enable-static"
 
@@ -54,7 +53,6 @@ MIREDO_PREF_OUT_DIR=$(OUT_DIR)/Library/PreferencePanes
 
 
 ##### Tool Variables
-PACKAGEMAKER=/Developer/Tools/packagemaker
 RMDIR=rm -fr
 MKDIR=mkdir
 CP=cp
@@ -70,44 +68,26 @@ XCODEBUILD=/usr/bin/xcodebuild
 
 	
 
-.PHONY: all miredo package clean mrproper tuntap libjudy uninst-script default pref-pane
+.PHONY: all miredo package clean mrproper libjudy uninst-script default pref-pane
 
 default: package
 
-all: tuntap miredo pref-pane uninst-script package
+all: miredo pref-pane uninst-script package
 
 uninst-script: $(OUT_DIR)$(UNINST_SCRIPT)
 
-$(OUT_DIR)$(UNINST_SCRIPT): pref-pane miredo tuntap 
+$(OUT_DIR)$(UNINST_SCRIPT): pref-pane miredo
 	$(RMKDIR) $(OUT_DIR)$(UNINST_SCRIPT_DIR)
 	echo "#!/bin/sh" > $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "cd /" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "sudo launchctl unload /Library/LaunchDaemons/miredo.plist" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "sudo killall -9 miredo" >> $(OUT_DIR)$(UNINST_SCRIPT)
-	echo "sudo /Library/StartupItems/tun/tun stop" >> $(OUT_DIR)$(UNINST_SCRIPT)
-	echo "sudo /Library/StartupItems/tap/tap stop" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	for FILE in `cd $(OUT_DIR) ; find . ` ; do { \
 		( cd $(OUT_DIR) && [ -d $$FILE ] ) && continue ; \
 		echo "sudo rm $$FILE" | grep -v .svn >> $(OUT_DIR)$(UNINST_SCRIPT) ; \
 	} ; done ;
-	echo "sudo rm -fr /Library/StartupItems/tun" >> $(OUT_DIR)$(UNINST_SCRIPT)
-	echo "sudo rm -fr /Library/StartupItems/tap" >> $(OUT_DIR)$(UNINST_SCRIPT)
-	echo "sudo rm -fr /Library/Extensions/tap.kext" >> $(OUT_DIR)$(UNINST_SCRIPT)
-	echo "sudo rm -fr /Library/Extensions/tun.kext" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "sudo rm $(UNINST_SCRIPT)" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	chmod +x $(OUT_DIR)$(UNINST_SCRIPT)
-
-tuntap:
-	$(MAKE) -C $(TUNTAP_DIR) tap.kext tun.kext
-	-$(RMKDIR) $(BUILD_DIR)
-	-$(RMKDIR) $(OUT_DIR)/Library/Extensions
-	-$(RMKDIR) $(OUT_DIR)/Library/StartupItems
-	$(CP) -fr $(TUNTAP_DIR)/tap.kext $(OUT_DIR)/Library/Extensions
-	$(CP) -fr $(TUNTAP_DIR)/tun.kext $(OUT_DIR)/Library/Extensions
-	$(CP) -fr $(TUNTAP_DIR)/startup_item/tap $(OUT_DIR)/Library/StartupItems
-	$(CP) -fr $(TUNTAP_DIR)/startup_item/tun $(OUT_DIR)/Library/StartupItems
-
-
 
 miredo-patch:
 	cd $(MIREDO_DIR) && patch -p0 < $(MISC_DIR)/miredo.diff
@@ -115,7 +95,7 @@ miredo-patch:
 bootstrap: $(JUDY_SRC_DIR)/configure $(MIREDO_DIR)/configure
 
 miredo-clean:
-	$(RM) -r $(MIREDO_BUILD_X86_DIR) $(MIREDO_BUILD_PPC_DIR)  $(MIREDO_OUT_X86_DIR)  $(MIREDO_OUT_PPC_DIR)
+	$(RM) -r $(MIREDO_BUILD_X86_DIR) $(MIREDO_BUILD_X86_64_DIR)  $(MIREDO_OUT_X86_DIR)  $(MIREDO_OUT_X86_64_DIR)
 
 $(MIREDO_DIR)/configure: $(MIREDO_DIR)/configure.ac
 	cd $(MIREDO_DIR) && ./autogen.sh
@@ -125,28 +105,29 @@ $(MIREDO_BUILD_X86_DIR)/config.status: $(MIREDO_SRC_DIR)/configure $(JUDY_OUT_X8
 	-$(RMKDIR) $(BUILD_DIR)
 	-$(RMKDIR) $(MIREDO_BUILD_X86_DIR)
 	-$(RMKDIR) $(MIREDO_OUT_X86_DIR)
-	cd $(MIREDO_BUILD_X86_DIR) && $(MIREDO_SRC_DIR)/configure $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch i386 -O2 -I$(JUDY_OUT_X86_DIR)/include" --with-Judy=$(JUDY_OUT_X86_DIR) LDFLAGS=-L$(JUDY_OUT_X86_DIR)/lib
+	cd $(MIREDO_BUILD_X86_DIR) && $(MIREDO_SRC_DIR)/configure $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch i386 -O2 -I$(JUDY_OUT_X86_DIR)/include -I/usr/local/Cellar/gettext/0.18.3.2/" --with-Judy=$(JUDY_OUT_X86_DIR) LDFLAGS=-L$(JUDY_OUT_X86_DIR)/lib
 
-$(MIREDO_BUILD_PPC_DIR)/config.status: $(MIREDO_SRC_DIR)/configure $(JUDY_OUT_PPC_DIR)/lib/libJudy.a
+$(MIREDO_BUILD_X86_64_DIR)/config.status: $(MIREDO_SRC_DIR)/configure $(JUDY_OUT_X86_64_DIR)/lib/libJudy.a
 	-$(RMKDIR) $(BUILD_DIR)
-	-$(RMKDIR) $(MIREDO_BUILD_PPC_DIR)
-	-$(RMKDIR) $(MIREDO_OUT_PPC_DIR)
-	cd $(MIREDO_BUILD_PPC_DIR) && $(MIREDO_SRC_DIR)/configure $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch ppc -O2 -I$(JUDY_OUT_PPC_DIR)/include" --with-Judy=$(JUDY_OUT_PPC_DIR) LDFLAGS=-L$(JUDY_OUT_PPC_DIR)/lib
+	-$(RMKDIR) $(MIREDO_BUILD_X86_64_DIR)
+	-$(RMKDIR) $(MIREDO_OUT_X86_64_DIR)
+	cd $(MIREDO_BUILD_X86_64_DIR) && $(MIREDO_SRC_DIR)/configure $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch x86_64 -O2 -I$(JUDY_OUT_X86_64_DIR)/include -I/usr/local/Cellar/gettext/0.18.3.2" --with-Judy=$(JUDY_OUT_X86_64_DIR) LDFLAGS=-L$(JUDY_OUT_X86_64_DIR)/lib
 
 miredo-x86-conf: $(MIREDO_BUILD_X86_DIR)/config.status
 
-miredo-ppc-conf: $(MIREDO_BUILD_PPC_DIR)/config.status
+miredo-x86_64-conf: $(MIREDO_BUILD_X86_64_DIR)/config.status
 
 $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_X86_DIR)/config.status
 	$(MAKE) -C $(MIREDO_BUILD_X86_DIR)
-	$(MAKE) -C $(MIREDO_BUILD_X86_DIR) install prefix=$(MIREDO_OUT_X86_DIR)$(PREFIX)
+	$(MAKE) -C $(MIREDO_BUILD_X86_DIR) install DESTDIR=$(MIREDO_OUT_X86_DIR)
 
-$(MIREDO_OUT_PPC_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_PPC_DIR)/config.status
-	$(MAKE) -C $(MIREDO_BUILD_PPC_DIR)
-	$(MAKE) -C $(MIREDO_BUILD_PPC_DIR) install prefix=$(MIREDO_OUT_PPC_DIR)$(PREFIX)
 
-$(OUT_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo $(MIREDO_OUT_PPC_DIR)$(PREFIX)/sbin/miredo
-	$(MAKE_UNIVERSAL) $(OUT_DIR) $(MIREDO_OUT_X86_DIR) $(MIREDO_OUT_PPC_DIR)
+$(MIREDO_OUT_X86_64_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_X86_64_DIR)/config.status
+	$(MAKE) -C $(MIREDO_BUILD_X86_64_DIR)
+	$(MAKE) -C $(MIREDO_BUILD_X86_64_DIR) install DESTDIR=$(MIREDO_OUT_X86_64_DIR)
+
+$(OUT_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo $(MIREDO_OUT_X86_64_DIR)$(PREFIX)/sbin/miredo
+	$(MAKE_UNIVERSAL) $(OUT_DIR) $(MIREDO_OUT_X86_DIR) $(MIREDO_OUT_X86_64_DIR)
 
 miredo: $(OUT_DIR)$(PREFIX)/sbin/miredo $(OUT_DIR)$(SYSCONF)/miredo.conf.sample $(OUT_DIR)/Library/LaunchDaemons/miredo.plist
 
@@ -165,37 +146,38 @@ $(JUDY_SRC_DIR)/configure: $(JUDY_SRC_DIR)/configure.ac
 	make -C $(JUDY_SRC_DIR)
 	make -C $(JUDY_SRC_DIR) distclean
 
-libjudy-bootstrap: $(JUDY_SRC_DIR)/configure
+Judy-1.0.5.tar.gz:
+	curl http://dfn.dl.sourceforge.net/project/judy/judy/Judy-1.0.5/Judy-1.0.5.tar.gz > Judy-1.0.5.tar.gz
 
-libjudy: $(JUDY_OUT_X86_DIR)/lib/libJudy.a $(JUDY_OUT_PPC_DIR)/lib/libJudy.a
+libjudy: $(JUDY_OUT_X86_DIR)/lib/libJudy.a $(JUDY_OUT_X86_64_DIR)/lib/libJudy.a
 
 libjudy-x86-conf: $(JUDY_BUILD_X86_DIR)/config.status
 
 libjudy-x86-build: $(JUDY_BUILD_X86_DIR)/config.status
 	$(MAKE) -C $(JUDY_BUILD_X86_DIR)
 
-$(JUDY_BUILD_X86_DIR)/config.status: $(JUDY_SRC_DIR)/configure
+$(JUDY_BUILD_X86_DIR)/config.status: Judy-1.0.5.tar.gz
 	-$(RMKDIR) $(BUILD_DIR)
-	-$(RMKDIR) $(JUDY_BUILD_X86_DIR)
+	test -e $(JUDY_BUILD_X86_DIR) || (tar xzf Judy-1.0.5.tar.gz && mv judy-1.0.5 $(JUDY_BUILD_X86_DIR))
 	-$(RMKDIR) $(JUDY_OUT_X86_DIR)
-	cd $(JUDY_BUILD_X86_DIR) && $(JUDY_SRC_DIR)/configure $(JUDY_CONFIG_FLAGS) CFLAGS='-arch i386 -O2 -I$(JUDY_SRC_DIR)/src -I$(JUDY_SRC_DIR)/src/Judy1 -I$(JUDY_SRC_DIR)/src/JudyCommon' --prefix=$(JUDY_OUT_X86_DIR)
+	cd $(JUDY_BUILD_X86_DIR) && ./configure $(JUDY_CONFIG_FLAGS) CFLAGS='-arch i386 -O2' --prefix=$(JUDY_OUT_X86_DIR)
 
 $(JUDY_OUT_X86_DIR)/lib/libJudy.a: $(JUDY_BUILD_X86_DIR)/config.status
 	$(MAKE) -C $(JUDY_BUILD_X86_DIR) install
 
-libjudy-ppc-conf: $(JUDY_BUILD_PPC_DIR)/config.status
+libjudy-x86_64-conf: $(JUDY_BUILD_X86_64_DIR)/config.status
 
-libjudy-ppc-build: $(JUDY_BUILD_PPC_DIR)/config.status
-	$(MAKE) -C $(JUDY_BUILD_PPC_DIR)
+libjudy-x86_64-build: $(JUDY_BUILD_X86_64_DIR)/config.status
+	$(MAKE) -C $(JUDY_BUILD_X86_64_DIR)
 
-$(JUDY_BUILD_PPC_DIR)/config.status: $(JUDY_SRC_DIR)/configure
+$(JUDY_BUILD_X86_64_DIR)/config.status: Judy-1.0.5.tar.gz
 	-$(RMKDIR) $(BUILD_DIR)
-	-$(RMKDIR) $(JUDY_BUILD_PPC_DIR)
-	-$(RMKDIR) $(JUDY_OUT_PPC_DIR)
-	cd $(JUDY_BUILD_PPC_DIR) && $(JUDY_SRC_DIR)/configure $(JUDY_CONFIG_FLAGS) CFLAGS='-arch ppc -O2 -I$(JUDY_SRC_DIR)/src -I$(JUDY_SRC_DIR)/src/Judy1 -I$(JUDY_SRC_DIR)/src/JudyCommon' --prefix=$(JUDY_OUT_PPC_DIR)
+	test -e $(JUDY_BUILD_X86_64_DIR) || (tar xzf Judy-1.0.5.tar.gz && mv judy-1.0.5 $(JUDY_BUILD_X86_64_DIR))
+	-$(RMKDIR) $(JUDY_OUT_X86_64_DIR)
+	cd $(JUDY_BUILD_X86_64_DIR) && ./configure $(JUDY_CONFIG_FLAGS) CFLAGS='-arch x86_64 -O2' --prefix=$(JUDY_OUT_X86_64_DIR)
 
-$(JUDY_OUT_PPC_DIR)/lib/libJudy.a: $(JUDY_BUILD_PPC_DIR)/config.status
-	$(MAKE) -C $(JUDY_BUILD_PPC_DIR) install
+$(JUDY_OUT_X86_64_DIR)/lib/libJudy.a: $(JUDY_BUILD_X86_64_DIR)/config.status
+	$(MAKE) -C $(JUDY_BUILD_X86_64_DIR) install
 
 
 pref-pane: $(MIREDO_PREF_OUT_DIR)/Miredo.prefPane
@@ -214,8 +196,8 @@ $(MIREDO_PREF_OUT_DIR)/Miredo.prefPane: $(MIREDO_PREF_SRC_DIR)/build/Release/Mir
 
 package: zip tarball
 
-$(TARNAME).pkg: tuntap miredo pref-pane uninst-script
-	$(PACKAGEMAKER) -build -p $@ -proj miredo.pmproj 
+$(TARNAME).pkg: miredo pref-pane uninst-script
+	pkgbuild --identifier $(IDENTIFIER) --root $(OUT_DIR) $(TARNAME).pkg
 
 $(TARNAME).pkg.tar.gz: $(TARNAME).pkg
 	tar cvzf $(TARNAME).pkg.tar.gz $(TARNAME).pkg
