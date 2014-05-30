@@ -1,7 +1,7 @@
 
 
-TARNAME=miredo-osx-prerelease3
-IDENTIFIER=com.openmedialibrary.pkg.miredo
+TARNAME=miredo-osx-0.x
+IDENTIFIER=com.github.bit.pkg.miredo
 
 ##### Path Variables
 PREFIX=/usr
@@ -47,11 +47,6 @@ JUDY_CONFIG_FLAGS+="--enable-static"
 UNINST_SCRIPT_DIR=/Applications/Utilities
 UNINST_SCRIPT=$(UNINST_SCRIPT_DIR)/uninstall-miredo.command
 
-## Pref Pane
-MIREDO_PREF_SRC_DIR=$(shell pwd)/MiredoPreferencePane
-MIREDO_PREF_OUT_DIR=$(OUT_DIR)/Library/PreferencePanes
-
-
 ##### Tool Variables
 RMDIR=rm -fr
 MKDIR=mkdir
@@ -68,15 +63,15 @@ XCODEBUILD=/usr/bin/xcodebuild
 
 	
 
-.PHONY: all miredo package clean mrproper libjudy uninst-script default pref-pane
+.PHONY: all miredo package clean mrproper libjudy uninst-script default
 
 default: package
 
-all: miredo pref-pane uninst-script package
+all: miredo uninst-script package
 
 uninst-script: $(OUT_DIR)$(UNINST_SCRIPT)
 
-$(OUT_DIR)$(UNINST_SCRIPT): pref-pane miredo
+$(OUT_DIR)$(UNINST_SCRIPT): miredo
 	$(RMKDIR) $(OUT_DIR)$(UNINST_SCRIPT_DIR)
 	echo "#!/bin/sh" > $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "cd /" >> $(OUT_DIR)$(UNINST_SCRIPT)
@@ -180,23 +175,12 @@ $(JUDY_OUT_X86_64_DIR)/lib/libJudy.a: $(JUDY_BUILD_X86_64_DIR)/config.status
 	$(MAKE) -C $(JUDY_BUILD_X86_64_DIR) install
 
 
-pref-pane: $(MIREDO_PREF_OUT_DIR)/Miredo.prefPane
-
-$(MIREDO_PREF_SRC_DIR)/build/Release/Miredo.prefPane:
-	cd $(MIREDO_PREF_SRC_DIR) && $(XCODEBUILD)
-
-$(MIREDO_PREF_OUT_DIR)/Miredo.prefPane: $(MIREDO_PREF_SRC_DIR)/build/Release/Miredo.prefPane
-	$(RMKDIR) $(MIREDO_PREF_OUT_DIR)
-	$(CP) -r $(MIREDO_PREF_SRC_DIR)/build/Release/Miredo.prefPane $(MIREDO_PREF_OUT_DIR)/Miredo.prefPane
-
-
-
 
 
 
 package: zip tarball
 
-$(TARNAME).pkg: miredo pref-pane uninst-script
+$(TARNAME).pkg: miredo uninst-script
 	pkgbuild --identifier $(IDENTIFIER) --root $(OUT_DIR) $(TARNAME).pkg
 
 $(TARNAME).pkg.tar.gz: $(TARNAME).pkg
@@ -212,10 +196,8 @@ tarball: $(TARNAME).pkg.tar.gz
 clean:
 	$(RMDIR) $(BUILD_DIR)
 	$(RMDIR) $(TARNAME).pkg
-	$(RMDIR) $(MIREDO_PREF_SRC_DIR)/build
 	$(RM) $(TARNAME).pkg.tar.gz
 	$(RM) $(TARNAME).pkg.zip
-	$(MAKE) -C $(TUNTAP_DIR) clean
 
 mrproper: clean
 	$(RM) $(MIREDO_DIR)/configure
