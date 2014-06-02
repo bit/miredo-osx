@@ -14,9 +14,7 @@ set
 	[ -f /etc/miredo.conf ] || cp /etc/miredo.conf.sample /etc/miredo.conf
 )
 
-sudo chown -R root:wheel /Library/LaunchDaemons/miredo.plist /usr/sbin/miredo /etc/miredo.conf /Library/PreferencePanes
+sudo chown -R root:wheel /Library/LaunchDaemons/miredo.plist /usr/sbin/miredo /etc/miredo.conf
 
 
 sudo launchctl load /Library/LaunchDaemons/miredo.plist
-
-open /Library/PreferencePanes/Miredo.prefPane

@@ -1,3 +1,6 @@
 build
 *.o
 *.a
+Judy*.tar.gz
+.DS_Store
+miredo*.pkg

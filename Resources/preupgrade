@@ -1,1 +1,24 @@
-preinstall
+#!/bin/sh
+
+# Stop miredo if it is running
+[ -f /System/Library/LaunchDaemons/miredo.plist ] && (
+	sudo launchctl unload /System/Library/LaunchDaemons/miredo.plist
+	sudo rm /System/Library/LaunchDaemons/miredo.plist
+	sudo killall miredo
+	sleep 2
+)
+
+[ -f /Library/LaunchDaemons/miredo.plist ] && (
+	sudo launchctl unload /Library/LaunchDaemons/miredo.plist
+	sudo rm /Library/LaunchDaemons/miredo.plist
+	sudo killall miredo
+	sleep 2
+)
+
+sudo killall -9 miredo
+
+[ -f /Applications/Utilities/uninstall-miredo.command ] && (
+	/Applications/Utilities/uninstall-miredo.command
+)
+
+true;
