@@ -1,3 +1,4 @@
 [submodule "miredo"]
 	path = miredo
-	url = https://github.com/fgp/miredo
+	url = https://github.com/bit/miredo
+	branch = 1.2-patches

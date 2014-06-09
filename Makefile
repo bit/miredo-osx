@@ -1,7 +1,7 @@
 
 
 TARNAME=miredo-osx-1.2.6-utun
-IDENTIFIER=com.github.bit.miredo
+IDENTIFIER=com.github.bit.miredo-osx
 
 ##### Path Variables
 PREFIX=/usr
