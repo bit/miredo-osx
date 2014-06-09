@@ -82,11 +82,6 @@ $(OUT_DIR)$(UNINST_SCRIPT): miredo
 	echo "sudo rm $(UNINST_SCRIPT)" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	chmod +x $(OUT_DIR)$(UNINST_SCRIPT)
 
-miredo-patch:
-	cd $(MIREDO_SRC_DIR) && patch -p0 < $(MISC_DIR)/miredo.diff
-
-bootstrap: $(JUDY_SRC_DIR)/configure $(MIREDO_SRC_DIR)/configure
-
 miredo-clean:
 	$(RM) -r $(MIREDO_BUILD_X86_DIR) $(MIREDO_BUILD_X86_64_DIR)  $(MIREDO_OUT_X86_DIR)  $(MIREDO_OUT_X86_64_DIR)
 
@@ -111,20 +106,15 @@ $(MIREDO_BUILD_X86_64_DIR)/config.status: $(MIREDO_SRC_DIR)/include/gettext.h $(
 	    LDFLAGS=-mmacosx-version-min=10.6 \
 	    --with-Judy=$(JUDY_OUT_X86_64_DIR) LDFLAGS=-L$(JUDY_OUT_X86_64_DIR)/lib
 
-miredo-x86-conf: $(MIREDO_BUILD_X86_DIR)/config.status
-
-miredo-x86_64-conf: $(MIREDO_BUILD_X86_64_DIR)/config.status
-
 $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_X86_DIR)/config.status
 	$(MAKE) -C $(MIREDO_BUILD_X86_DIR)
 	$(MAKE) -C $(MIREDO_BUILD_X86_DIR) install DESTDIR=$(MIREDO_OUT_X86_DIR)
-
 
 $(MIREDO_OUT_X86_64_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_X86_64_DIR)/config.status
 	$(MAKE) -C $(MIREDO_BUILD_X86_64_DIR)
 	$(MAKE) -C $(MIREDO_BUILD_X86_64_DIR) install DESTDIR=$(MIREDO_OUT_X86_64_DIR)
 
-$(OUT_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo $(MIREDO_OUT_X86_64_DIR)$(PREFIX)/sbin/miredo
+$(OUT_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_SRC_DIR)/configure $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo $(MIREDO_OUT_X86_64_DIR)$(PREFIX)/sbin/miredo
 	$(MAKE_UNIVERSAL) $(OUT_DIR) $(MIREDO_OUT_X86_DIR) $(MIREDO_OUT_X86_64_DIR)
 	rm -rf \
 	    $(OUT_DIR)/usr/lib \
@@ -150,6 +140,9 @@ $(JUDY_SRC_DIR)/configure: $(JUDY_SRC_DIR)/configure.ac
 	cd $(JUDY_SRC_DIR) && ./configure
 	make -C $(JUDY_SRC_DIR)
 	make -C $(JUDY_SRC_DIR) distclean
+
+$(MIREDO_SRC_DIR)/configure:
+	cd $(MIREDO_SRC_DIR) && PATH=$(PATH):/usr/local/Cellar/gettext/0.18.3.2/bin ./autogen.sh
 
 Judy-1.0.5.tar.gz:
 	curl http://dfn.dl.sourceforge.net/project/judy/judy/Judy-1.0.5/Judy-1.0.5.tar.gz > Judy-1.0.5.tar.gz
