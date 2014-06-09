@@ -1,6 +1,6 @@
 
 
-TARNAME=miredo-osx-1.2.6-utun
+TARNAME=miredo-osx-v1.2.6-beta1
 IDENTIFIER=com.github.bit.miredo-osx
 
 ##### Path Variables
