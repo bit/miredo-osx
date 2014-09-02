@@ -21,4 +21,6 @@ sudo killall -9 miredo
 	/Applications/Utilities/uninstall-miredo.command
 )
 
+sudo rm -rf /Library/PreferencePanes/Miredo.prefPane
+
 true;

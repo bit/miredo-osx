@@ -1,6 +1,6 @@
 
 
-TARNAME=miredo-osx-v1.2.6-beta1
+TARNAME=miredo-osx-v1.2.6-beta2
 IDENTIFIER=com.github.bit.miredo-osx
 
 ##### Path Variables
@@ -79,6 +79,7 @@ $(OUT_DIR)$(UNINST_SCRIPT): miredo
 		( cd $(OUT_DIR) && [ -d $$FILE ] ) && continue ; \
 		echo "sudo rm $$FILE" | grep -v .svn >> $(OUT_DIR)$(UNINST_SCRIPT) ; \
 	} ; done ;
+	echo "sudo rm -rf /Library/PreferencePanes/Miredo.prefPane" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	echo "sudo rm $(UNINST_SCRIPT)" >> $(OUT_DIR)$(UNINST_SCRIPT)
 	chmod +x $(OUT_DIR)$(UNINST_SCRIPT)
 
