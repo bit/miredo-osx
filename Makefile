@@ -94,8 +94,8 @@ $(MIREDO_BUILD_X86_DIR)/config.status: $(MIREDO_SRC_DIR)/include/gettext.h $(JUD
 	-$(RMKDIR) $(MIREDO_BUILD_X86_DIR)
 	-$(RMKDIR) $(MIREDO_OUT_X86_DIR)
 	cd $(MIREDO_BUILD_X86_DIR) && $(MIREDO_SRC_DIR)/configure \
-	    $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch i386 -O2 -I$(JUDY_OUT_X86_DIR)/include -mmacosx-version-min=10.6" \
-        LDFLAGS=-mmacosx-version-min=10.6 \
+	    $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch i386 -O2 -I$(JUDY_OUT_X86_DIR)/include -mmacosx-version-min=10.5" \
+        LDFLAGS=-mmacosx-version-min=10.5 \
 	    --with-Judy=$(JUDY_OUT_X86_DIR) LDFLAGS=-L$(JUDY_OUT_X86_DIR)/lib
 
 $(MIREDO_BUILD_X86_64_DIR)/config.status: $(MIREDO_SRC_DIR)/include/gettext.h $(JUDY_OUT_X86_64_DIR)/lib/libJudy.a
@@ -103,8 +103,8 @@ $(MIREDO_BUILD_X86_64_DIR)/config.status: $(MIREDO_SRC_DIR)/include/gettext.h $(
 	-$(RMKDIR) $(MIREDO_BUILD_X86_64_DIR)
 	-$(RMKDIR) $(MIREDO_OUT_X86_64_DIR)
 	cd $(MIREDO_BUILD_X86_64_DIR) && $(MIREDO_SRC_DIR)/configure \
-	    $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch x86_64 -O2 -I$(JUDY_OUT_X86_64_DIR)/include -mmacosx-version-min=10.6" \
-	    LDFLAGS=-mmacosx-version-min=10.6 \
+	    $(MIREDO_CONFIG_FLAGS) CFLAGS="-arch x86_64 -O2 -I$(JUDY_OUT_X86_64_DIR)/include -mmacosx-version-min=10.5" \
+	    LDFLAGS=-mmacosx-version-min=10.5 \
 	    --with-Judy=$(JUDY_OUT_X86_64_DIR) LDFLAGS=-L$(JUDY_OUT_X86_64_DIR)/lib
 
 $(MIREDO_OUT_X86_DIR)$(PREFIX)/sbin/miredo: $(MIREDO_BUILD_X86_DIR)/config.status
@@ -160,7 +160,7 @@ $(JUDY_BUILD_X86_DIR)/config.status: Judy-1.0.5.tar.gz
 	test -e $(JUDY_BUILD_X86_DIR) || (tar xzf Judy-1.0.5.tar.gz && mv judy-1.0.5 $(JUDY_BUILD_X86_DIR))
 	-$(RMKDIR) $(JUDY_OUT_X86_DIR)
 	cd $(JUDY_BUILD_X86_DIR) && ./configure $(JUDY_CONFIG_FLAGS) \
-	    CFLAGS='-arch i386 -O2 -mmacosx-version-min=10.6' --prefix=$(JUDY_OUT_X86_DIR)
+	    CFLAGS='-arch i386 -O2 -mmacosx-version-min=10.5' --prefix=$(JUDY_OUT_X86_DIR)
 
 $(JUDY_OUT_X86_DIR)/lib/libJudy.a: $(JUDY_BUILD_X86_DIR)/config.status
 	$(MAKE) -C $(JUDY_BUILD_X86_DIR) install
@@ -175,7 +175,7 @@ $(JUDY_BUILD_X86_64_DIR)/config.status: Judy-1.0.5.tar.gz
 	test -e $(JUDY_BUILD_X86_64_DIR) || (tar xzf Judy-1.0.5.tar.gz && mv judy-1.0.5 $(JUDY_BUILD_X86_64_DIR))
 	-$(RMKDIR) $(JUDY_OUT_X86_64_DIR)
 	cd $(JUDY_BUILD_X86_64_DIR) && ./configure $(JUDY_CONFIG_FLAGS) \
-	    CFLAGS='-arch x86_64 -O2 -mmacosx-version-min=10.6' --prefix=$(JUDY_OUT_X86_64_DIR)
+	    CFLAGS='-arch x86_64 -O2 -mmacosx-version-min=10.5' --prefix=$(JUDY_OUT_X86_64_DIR)
 
 $(JUDY_OUT_X86_64_DIR)/lib/libJudy.a: $(JUDY_BUILD_X86_64_DIR)/config.status
 	$(MAKE) -C $(JUDY_BUILD_X86_64_DIR) install
