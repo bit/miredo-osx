@@ -12,10 +12,10 @@
 	<false/>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/sbin/miredo</string>
+		<string>/usr/local/sbin/miredo</string>
 		<string>--foreground</string>
 		<string>-c</string>
-		<string>/etc/miredo.conf</string>
+		<string>/usr/local/etc/miredo.conf</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>

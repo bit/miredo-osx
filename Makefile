@@ -1,11 +1,11 @@
 
 
-TARNAME=miredo-osx-v1.2.6-beta2
+TARNAME=miredo-osx-v1.2.6-beta3
 IDENTIFIER=com.github.bit.miredo-osx
 
 ##### Path Variables
-PREFIX=/usr
-SYSCONF=/etc
+PREFIX=/usr/local
+SYSCONF=/usr/local/etc
 LOCALSTATE=/var
 MISC_DIR=$(shell pwd)/misc
 BUILD_DIR=$(shell pwd)/build
